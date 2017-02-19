@@ -6,6 +6,7 @@ from auto_reply import Tuling
 from auto_reply import Stand
 import threading
 import re
+import shutil
 
 
 mid = '@搅屎棍机器人'
@@ -102,6 +103,7 @@ def operate_tmp_file(_type, _id):
         res = {"type": _type, "id": _id}
         f.write(str(res) + "\n")
         f.close()
+        shutil.move(_id, "result/" + _id)
     finally:
         lock.release()
 

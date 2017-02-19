@@ -3,5 +3,5 @@
 import itchat
 from auto_reply import wechat
 
-itchat.auto_login(hotReload=True, enableCmdQR=True)
+itchat.auto_login(hotReload=True, enableCmdQR=2)
 itchat.run()
