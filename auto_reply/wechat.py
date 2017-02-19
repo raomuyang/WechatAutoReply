@@ -13,14 +13,31 @@ lock = threading.Lock()
 
 @itchat.msg_register(TEXT, isFriendChat=False, isGroupChat=True, isMpChat=False)
 def auto_reply_group_text(msg):
-    is_at = msg['isAt']
 
-    if (mid in msg["Text"]) and msg["Text"].__len__() - mid.__len__() < 10:
+    if (mid in msg["Text"]) and msg["Text"].__len__() - mid.__len__() < 3:
         itchat.send_msg(msg="我来了", toUserName=msg['FromUserName'])
         return "@img@resources/hello.jpg"
+
+    #这里要用正则表达式重新写一下
+    elif msg["Text"][0] == "@":
+        return
+
     resp = Tuling.request_api1(msg["Text"])
     if resp is not None:
+        print(resp)
         itchat.send_msg(msg=resp['text'], toUserName=msg['FromUserName'])
+
+        if int(resp['code']) == 308000:
+            count = 5
+            url_list = resp['list']
+            items = ""
+            for item in url_list:
+                if count <= 0:
+                    break
+                i_str = item["name"] + " \n" + item["info"] + " \n" + item["detailurl"]
+                items = items + "\n\n" + i_str
+                count -= 1
+            itchat.send_msg(msg=items, toUserName=msg['FromUserName'])
 
 
 @itchat.msg_register(TEXT, isFriendChat=True, isGroupChat=False)
@@ -30,7 +47,20 @@ def auto_reply_friends_text(msg):
         return "@img@resources/hello.jpg"
     resp = Tuling.request_api1(msg["Text"])
     if resp is not None:
+
         itchat.send_msg(msg=resp['text'], toUserName=msg['FromUserName'])
+
+        if int(resp['code']) == 308000:
+            count = 7
+            url_list = resp['list']
+            items = ""
+            for item in url_list:
+                if count <= 0:
+                    break
+                i_str = item["name"] + " \n" + item["info"] + " \n" + item["detailurl"]
+                items = items + "\n\n" + i_str
+                count -= 1
+            itchat.send_msg(msg=items, toUserName=msg['FromUserName'])
 
 
 @itchat.msg_register([PICTURE, CARD, NOTE, FRIENDS, SYSTEM], isFriendChat=True, isMpChat=False, isGroupChat=False)
