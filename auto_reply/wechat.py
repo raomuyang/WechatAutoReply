@@ -5,6 +5,7 @@ from itchat.content import *
 from auto_reply import Tuling
 from auto_reply import Stand
 import threading
+import re
 
 
 mid = '@搅屎棍机器人'
@@ -13,18 +14,16 @@ lock = threading.Lock()
 
 @itchat.msg_register(TEXT, isFriendChat=False, isGroupChat=True, isMpChat=False)
 def auto_reply_group_text(msg):
-
-    if (mid in msg["Text"]) and msg["Text"].__len__() - mid.__len__() < 3:
+    if re.findall(mid, msg["Text"]).__len__() > 0 and msg["Text"].__len__() - mid.__len__() < 3:
         itchat.send_msg(msg="我来了", toUserName=msg['FromUserName'])
         return "@img@resources/hello.jpg"
 
     #这里要用正则表达式重新写一下
-    elif msg["Text"][0] == "@":
+    elif re.findall("(@.*\s)", msg["Text"]).__len__() > 0 and re.findall(mid, msg["Text"]).__len__() == 0:
         return
 
     resp = Tuling.request_api1(msg["Text"])
     if resp is not None:
-        print("Response:", resp)
         is_send = reply_url(resp, msg)
         if not is_send:
             itchat.send_msg(msg=resp['text'], toUserName=msg['FromUserName'])
@@ -37,7 +36,6 @@ def auto_reply_friends_text(msg):
         return "@img@resources/hello.jpg"
     resp = Tuling.request_api1(msg["Text"])
     if resp is not None:
-        print("Response:", resp)
         is_send = reply_url(resp, msg)
         if not is_send:
             itchat.send_msg(msg=resp['text'], toUserName=msg['FromUserName'])
