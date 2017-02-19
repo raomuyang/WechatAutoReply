@@ -7,14 +7,15 @@ from auto_reply import Stand
 import threading
 
 
-mid = '@测试机 '
+mid = '@搅屎棍机器人'
 lock = threading.Lock()
 
 
 @itchat.msg_register(TEXT, isFriendChat=False, isGroupChat=True, isMpChat=False)
 def auto_reply_group_text(msg):
     is_at = msg['isAt']
-    if is_at and msg["Text"] == mid:
+
+    if (mid in msg["Text"]) and msg["Text"].__len__() - mid.__len__() < 10:
         itchat.send_msg(msg="我来了", toUserName=msg['FromUserName'])
         return "@img@resources/hello.jpg"
     resp = Tuling.request_api1(msg["Text"])

@@ -1,6 +1,6 @@
 # __*__coding__*__
 
-hello = ["你好", "您好", "hello", "HELLO", "Hello"]
+hello = ["你好", "您好", "hello", "HELLO", "Hello", "嗨", "嘿", "哈喽"]
 
 def isSayHello(str):
     """
