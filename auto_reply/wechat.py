@@ -24,20 +24,10 @@ def auto_reply_group_text(msg):
 
     resp = Tuling.request_api1(msg["Text"])
     if resp is not None:
-        print(resp)
-        itchat.send_msg(msg=resp['text'], toUserName=msg['FromUserName'])
-
-        if int(resp['code']) == 308000:
-            count = 5
-            url_list = resp['list']
-            items = ""
-            for item in url_list:
-                if count <= 0:
-                    break
-                i_str = item["name"] + " \n" + item["info"] + " \n" + item["detailurl"]
-                items = items + "\n\n" + i_str
-                count -= 1
-            itchat.send_msg(msg=items, toUserName=msg['FromUserName'])
+        print("Response:", resp)
+        is_send = reply_url(resp, msg)
+        if not is_send:
+            itchat.send_msg(msg=resp['text'], toUserName=msg['FromUserName'])
 
 
 @itchat.msg_register(TEXT, isFriendChat=True, isGroupChat=False)
@@ -47,20 +37,10 @@ def auto_reply_friends_text(msg):
         return "@img@resources/hello.jpg"
     resp = Tuling.request_api1(msg["Text"])
     if resp is not None:
-
-        itchat.send_msg(msg=resp['text'], toUserName=msg['FromUserName'])
-
-        if int(resp['code']) == 308000:
-            count = 7
-            url_list = resp['list']
-            items = ""
-            for item in url_list:
-                if count <= 0:
-                    break
-                i_str = item["name"] + " \n" + item["info"] + " \n" + item["detailurl"]
-                items = items + "\n\n" + i_str
-                count -= 1
-            itchat.send_msg(msg=items, toUserName=msg['FromUserName'])
+        print("Response:", resp)
+        is_send = reply_url(resp, msg)
+        if not is_send:
+            itchat.send_msg(msg=resp['text'], toUserName=msg['FromUserName'])
 
 
 @itchat.msg_register([PICTURE, CARD, NOTE, FRIENDS, SYSTEM], isFriendChat=True, isMpChat=False, isGroupChat=False)
@@ -126,6 +106,28 @@ def operate_tmp_file(_type, _id):
         f.close()
     finally:
         lock.release()
+
+
+def reply_url(resp, msg):
+    print("Response:", resp)
+    if int(resp['code']) == 308000:
+        count = 5
+        url_list = resp['list']
+        items = resp["text"]
+        for item in url_list:
+            if count <= 0:
+                break
+            i_str = item["name"] + " \n" + item["info"] + " \n" + item["detailurl"]
+            items = items + "\n\n" + i_str
+            count -= 1
+        itchat.send_msg(msg=items, toUserName= msg['FromUserName'])
+        return True
+    if int(resp['code']) == 200000:
+        items = resp["text"] + "\n" + resp["url"]
+        itchat.send_msg(msg=items, toUserName=msg['FromUserName'])
+        return True
+    return False
+
 
 
 
