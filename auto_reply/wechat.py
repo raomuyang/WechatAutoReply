@@ -109,9 +109,15 @@ def operate_tmp_file(_type, _id):
 
 
 def reply_url(resp, msg):
+    """
+    自动解析图灵机器人返回的消息，列出url
+    :param resp:
+    :param msg:
+    :return:
+    """
     print("Response:", resp)
     if int(resp['code']) == 308000:
-        count = 5
+        count = 15
         url_list = resp['list']
         items = resp["text"]
         for item in url_list:
@@ -122,6 +128,19 @@ def reply_url(resp, msg):
             count -= 1
         itchat.send_msg(msg=items, toUserName= msg['FromUserName'])
         return True
+
+    if int(resp['code']) == 302000:
+        count = 15
+        url_list = resp["list"]
+        items = resp["text"]
+        for news in url_list:
+            if count < 0:
+                break
+            n_str = news["article"] + "\n" + "来源：%s\n" % news['source'] + news["detailurl"]
+            items = items + n_str
+        itchat.send_msg(msg=items, toUserName=msg['FromUserName'])
+        return True
+
     if int(resp['code']) == 200000:
         items = resp["text"] + "\n" + resp["url"]
         itchat.send_msg(msg=items, toUserName=msg['FromUserName'])
