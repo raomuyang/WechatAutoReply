@@ -23,6 +23,8 @@ def auto_reply_group_text(msg):
     elif re.findall("(@.*\s)", msg["Text"]).__len__() > 0 and re.findall(mid, msg["Text"]).__len__() == 0:
         return
 
+    if re.findall(mid, msg["Text"]).__len__() > 0 and msg["Text"].__len__() - mid.__len__() >= 3:
+        msg["Text"] = msg["Text"].replace(mid, ",")
     resp = Tuling.request_api1(msg["Text"])
     if resp is not None:
         is_send = reply_url(resp, msg)
