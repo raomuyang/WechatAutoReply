@@ -8,8 +8,8 @@ import threading
 import itchat
 from itchat.content import *
 
+import Tuling
 from auto_reply import Stand
-from auto_reply import Tuling
 
 mid = '@搅屎棍机器人'
 lock = threading.Lock()

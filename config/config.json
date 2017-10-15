@@ -1,7 +1,7 @@
 {
   "name": "@搅屎棍机器人",
 
-  "tuling": {
+  "robot_api": {
     "keys": [
       "da3d060333cd472a94523909709c2f80"
     ],
@@ -15,7 +15,5 @@
     "port": "",
     "user": "",
     "pwd": ""
-  },
-
-  "log_level": "debug"
+  }
 }

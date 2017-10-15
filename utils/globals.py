@@ -5,6 +5,7 @@ import json
 import sys
 import logging
 import logging.config
+import os
 from os import path
 
 try:
@@ -20,10 +21,15 @@ project_path = _root_path + "/../"
 config_path = "/".join([project_path, "config"])
 resource_path = "/".join([project_path, "resources"])
 
+try:
+    os.mkdir('/'.join([_root_path, 'logs']))
+except:
+    pass
+
 # get properties
-data = {}
+_data = {}
 with open('/'.join([config_path, 'config.json']), "rb") as f:
-    data = json.load(f)
+    _data = json.load(f)
 
 
 def init_logging():
@@ -35,11 +41,11 @@ logger = init_logging()
 
 
 def get_robot_name():
-    return data.get('name')
+    return _data.get('name')
 
 
 def get_robot_api():
-    return data.get("tuling", None)
+    return _data.get("robot_api", None)
 
 
 def get_db():
