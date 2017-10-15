@@ -2,3 +2,5 @@
 *.pkl
 result
 .idea
+logs/
+*.log
