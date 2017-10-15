@@ -2,19 +2,19 @@
 
 hello = ["你好", "您好", "hello", "HELLO", "Hello", "嗨", "嘿", "哈喽"]
 
-def isSayHello(str):
+
+def is_say_hello(msg):
     """
-    :param str:
+    :param msg:
     :return:
     1 short hello
     0 lang hello
     -1 not say hello
-
     """
     for h in hello:
-        if h not in str:
+        if h not in msg:
             continue
-        if str.__len__() > 5:
+        if msg.__len__() > 5:
             return 0
         else:
             return 1

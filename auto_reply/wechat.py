@@ -1,13 +1,14 @@
 # __*__coding__*__
 
-import itchat
-from itchat.content import *
-from auto_reply import Tuling
-from auto_reply import Stand
-import threading
 import re
 import shutil
+import threading
 
+import itchat
+from itchat.content import *
+
+from auto_reply import Stand
+from auto_reply import Tuling
 
 mid = '@搅屎棍机器人'
 lock = threading.Lock()
@@ -19,7 +20,6 @@ def auto_reply_group_text(msg):
         itchat.send_msg(msg="我来了", toUserName=msg['FromUserName'])
         return "@img@resources/hello.jpg"
 
-    #这里要用正则表达式重新写一下
     elif re.findall("(@.*\s)", msg["Text"]).__len__() > 0 and re.findall(mid, msg["Text"]).__len__() == 0:
         return
 
@@ -34,7 +34,7 @@ def auto_reply_group_text(msg):
 
 @itchat.msg_register(TEXT, isFriendChat=True, isGroupChat=False)
 def auto_reply_friends_text(msg):
-    hello = Stand.isSayHello(msg["Text"])
+    hello = Stand.is_say_hello(msg["Text"])
     if hello > 0:
         return "@img@resources/hello.jpg"
     resp = Tuling.request_api1(msg["Text"])
