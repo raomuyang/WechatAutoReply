@@ -18,12 +18,11 @@ class AutoReplyAPI(object):
 
 
 class TulingAutoReply(AutoReplyAPI):
-
     def ask(self, message, user_id=None, location=None):
         return self.request_api1(msg=message, user_id=user_id, loc=location)
 
     def __init__(self):
-        super().__init__()
+        AutoReplyAPI.__init__(self)
         self.api_keys = self.api_info.get('keys', [])
 
     def request_api1(self, msg, user_id=None, loc=None):
@@ -48,7 +47,7 @@ class TulingAutoReply(AutoReplyAPI):
         if response.status_code / 100 != 2 or int(response_msg['code'] / 10000) == 4:
             self.logger.error("Request answer failed, {}".format(response_msg))
             return None
-        return response_msg
+        return self.format_msg_v1(response_msg)
 
     def request_api2(self, msg, user_id=None, loc=None):
         count = len(self.api_keys)
@@ -74,7 +73,7 @@ class TulingAutoReply(AutoReplyAPI):
         if response.status_code / 100 != 2:
             self.logger.error("Request answer failed, {}".format(response_msg))
             return None
-        return response_msg
+        return self.format_msg_v2(response_msg)
 
     def get_request_entity_v1_0(self, api_key, msg, user_id=None, location=None):
         api_v1 = self.api_info.get("api1")
@@ -96,7 +95,7 @@ class TulingAutoReply(AutoReplyAPI):
             user_id = "11235813214465"
 
         if location is None:
-            location = "江西省南昌市江西财经大学麦庐园校区"
+            location = "南昌"
 
         entity = {
             "perception": {
@@ -104,7 +103,7 @@ class TulingAutoReply(AutoReplyAPI):
                     "text": msg
                 },
                 "selfInfo": {
-                    "nearest_poi_name": location
+                    "city": location
                 }
             },
             "userInfo": {
@@ -112,13 +111,87 @@ class TulingAutoReply(AutoReplyAPI):
                 "userId": user_id
             }
         }
+
         return api_v2, entity
+
+    def format_msg_v1(self, response_msg):
+        """
+        api v1
+        自动解析图灵机器人返回的消息，列出url
+        :param response_msg:
+        :return:
+        """
+        self.logger.debug("Response: {}".format(response_msg))
+        if int(response_msg['code']) == 308000:
+            # 返回至多15条搜索结果
+            url_list = response_msg['list']
+            if not url_list or type(url_list) != list:
+                return response_msg['text']
+
+            result = url_list[:15]
+            items = str(response_msg["text"])
+            for item in result:
+                i_str = "{}\n{}\n{}".format(item["name"], item["info"], item["detailurl"])
+                items = "\n\n".join([items, i_str])
+            return items
+
+        if int(response_msg['code']) == 302000:
+
+            url_list = response_msg['list']
+            if not url_list or type(url_list) != list:
+                return response_msg['text']
+
+            result = url_list[:15]
+            items = str(response_msg["text"])
+
+            for news in result:
+                if not news["article"] or news["article"] == '':
+                    continue
+                n_str = "{}\n来源:{}\n{}".format(news["article"], news['source'], news["detailurl"])
+                items = "\n\n".join([items, n_str])
+            return items
+
+        if int(response_msg['code']) == 200000:
+            items = response_msg["text"] + "\n" + response_msg["url"]
+            return items
+        return response_msg['text']
+
+    def format_msg_v2(self, response_msg):
+        self.logger.debug("Response: {}".format(response_msg))
+        code = response_msg.get("intent", {}).get('code', None)
+        if not code:
+            return "error, error!!! hot hot hot affsafa asdfkl/ adsfma f."
+
+        results = response_msg.get("results", [])[:15]
+
+        msg = ""
+        info = ""
+        for result in results:
+            result_type = result.get("resultType")
+            if result_type == 'text':
+                msg = result.get('values', {}).get('text', "None")
+                continue
+            if result_type == "news":
+                news = result.get('values', {}).get("news", [])[:15]
+                news = list(filter(lambda n: True if n and n.get('name') and n.get('name') != '' else False, news))
+                generator = lambda x: "[{}] {}\n{}".format(x.get('info'), x.get('name'), x.get('detailurl'))
+                news_list = map(generator, news)
+                info = "\n".join(news_list)
+                continue
+            if result_type == 'url':
+                info = {"url": result.get('values', {}).get('url', "http://atomicer.cn")}
+                continue
+        if type(info) == str:
+            return "\n".join([msg, info])
+        else:
+            return info
 
 
 if __name__ == '__main__':
     tuling = TulingAutoReply()
-    resp = tuling.request_api1("Hello, api v1.")
+    resp = tuling.request_api1("近期有哪些新闻.")
     print(resp)
 
-    resp = tuling.request_api2("It' nice weather today.")
+    resp = tuling.request_api2("近期有哪些新闻.")
     print(resp)
+
