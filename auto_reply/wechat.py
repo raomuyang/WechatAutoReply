@@ -1,5 +1,6 @@
 # __*__coding__*__
 
+import os
 import re
 import shutil
 import threading
@@ -98,9 +99,8 @@ def operate_tmp_file(_type, _id):
     lock.acquire()
     try:
         try:
-            f = open("result/reveiveds.txt", "a")
+            f = open("result/received.txt", "a")
         except Exception:
-            import os
             os.mkdir("result")
         res = {"type": _type, "id": _id}
         f.write(str(res) + "\n")

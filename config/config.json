@@ -1,0 +1,21 @@
+{
+  "name": "@搅屎棍机器人",
+
+  "tuling": {
+    "keys": [
+      "da3d060333cd472a94523909709c2f80"
+    ],
+    "api1": "http://www.tuling123.com/openapi/api",
+    "api2": "http://openapi.tuling123.com/openapi/api/v2"
+  },
+
+  "db": {
+    "type": "mysql",
+    "host": "127.0.0.1",
+    "port": "",
+    "user": "",
+    "pwd": ""
+  },
+
+  "log_level": "debug"
+}
