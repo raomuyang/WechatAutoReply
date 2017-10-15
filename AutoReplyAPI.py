@@ -187,6 +187,8 @@ class TulingAutoReply(AutoReplyAPI):
             return info
 
 
+api = TulingAutoReply()
+
 if __name__ == '__main__':
     tuling = TulingAutoReply()
     resp = tuling.request_api1("近期有哪些新闻.")
